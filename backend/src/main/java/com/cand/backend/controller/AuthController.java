@@ -18,7 +18,7 @@ import com.cand.backend.security.JwtTokenProvider;
 import com.cand.backend.service.UserService;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
     @Autowired
     private UserService userService;

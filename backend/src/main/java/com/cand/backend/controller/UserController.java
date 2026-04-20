@@ -11,7 +11,7 @@ import com.cand.backend.model.User;
 import com.cand.backend.repository.UserRepository;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     @Autowired
