@@ -37,3 +37,8 @@ frontend/android/app/release
 
 # Legacy folder (removed from repo)
 FE/
+# Ignore docs-private folder
+docs-private/
+*.docx
+*.png
+*.md 
