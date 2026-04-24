@@ -1,7 +1,20 @@
 package com.cand.backend.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
@@ -25,7 +38,7 @@ public class User {
     private String username;
 
     @Column(name = "mat_khau_hash", nullable = false)
-    private String password; // Giữ tên password để đồng bộ với UserService
+    private String password;
 
     @Column(name = "ten", length = 100)
     private String firstName;
@@ -69,7 +82,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "vai_tro")
-    private Role role; // Sử dụng Enum Role như Leader yêu cầu
+    private Role role;
 
     @Column(name = "trang_thai", length = 50)
     private String status;
@@ -93,4 +106,15 @@ public class User {
 
     @Column(name = "two_factor_enabled")
     private boolean twoFactorEnabled = false;
+
+    // Helper method for compatibility with old Auth code
+    public void setName(String name) {
+        if (name != null && name.contains(" ")) {
+            int lastSpace = name.lastIndexOf(" ");
+            this.lastName = name.substring(0, lastSpace);
+            this.firstName = name.substring(lastSpace + 1);
+        } else {
+            this.firstName = name;
+        }
+    }
 }

@@ -11,8 +11,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransferRequestDto {
-    private UUID userId;
-    private Long toUnitId;
-    private String reason;
-    private String documentUrl;
+    private UUID userId;        // ID đoàn viên (UUID chuẩn DBML)
+    private Long toUnitId;      // ID đơn vị đích
+    private String reason;      // Lý do chuyển
+    private String documentUrl; // File đính kèm (theo Figma)
 }

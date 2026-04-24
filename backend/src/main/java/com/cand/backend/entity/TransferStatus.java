@@ -1,4 +1,4 @@
-package com.cand.backend.model;
+package com.cand.backend.entity;
 
 public enum TransferStatus {
     PENDING, // Đang chờ phê duyệt

@@ -1,20 +1,25 @@
 package com.cand.backend.service;
 
 import com.cand.backend.dto.TransferRequestDto;
-import com.cand.backend.model.TransferRequest;
-import com.cand.backend.model.User;
+import com.cand.backend.entity.TransferRequest;
+import com.cand.backend.entity.User;
 import java.util.List;
+import java.util.UUID;
 
 public interface TransferRequestService {
     
-    // Đăng ký các phương thức nghiệp vụ theo chuẩn TSK-008
+    // Gửi yêu cầu mới
     TransferRequest submitRequest(TransferRequestDto requestDto);
     
-    TransferRequest approveBySource(Long requestId, User approver);
+    // Đơn vị đi phê duyệt
+    TransferRequest approveBySource(Long requestId, UUID approverId);
     
-    TransferRequest approveByDestination(Long requestId, User approver);
+    // Đơn vị đến phê duyệt (Hoàn tất)
+    TransferRequest approveByDestination(Long requestId, UUID approverId);
     
+    // Từ chối yêu cầu
     TransferRequest rejectRequest(Long requestId, String reason);
     
+    // Lấy danh sách yêu cầu
     List<TransferRequest> getAllRequests();
 }

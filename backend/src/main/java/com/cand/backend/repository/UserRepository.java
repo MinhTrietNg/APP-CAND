@@ -1,17 +1,14 @@
 package com.cand.backend.repository;
 
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.cand.backend.entity.User;
-
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    // Tìm kiếm người dùng bằng email để kiểm tra đăng nhập
+    Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
-
-    // Kiểm tra xem email đã tồn tại hay chưa (dùng cho lúc đăng ký)
-    Boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 }
