@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.cand.backend.entity.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.UUID;
+
+public interface UserRepository extends JpaRepository<User, UUID> {
     // Tìm kiếm người dùng bằng email để kiểm tra đăng nhập
     Optional<User> findByEmail(String email);
 

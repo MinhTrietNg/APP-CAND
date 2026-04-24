@@ -1,11 +1,10 @@
 package com.cand.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "Yeu_cau_chuyen_sinh_hoat")
@@ -31,9 +30,10 @@ public class TransferRequest {
     @JoinColumn(name = "den_don_vi_id", nullable = false)
     private Unit toUnit;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai", length = 50, nullable = false)
     @Builder.Default
-    private String status = "PENDING"; // Dùng String trực tiếp theo DBML
+    private TransferStatus status = TransferStatus.PENDING;
 
     @Column(name = "ly_do", columnDefinition = "TEXT")
     private String reason;

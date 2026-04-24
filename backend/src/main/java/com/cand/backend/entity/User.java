@@ -25,7 +25,7 @@ public class User {
     private String username;
 
     @Column(name = "mat_khau_hash", nullable = false)
-    private String password; // Giữ tên password dể đồng bộ với UserService
+    private String password; // Giữ tên password để đồng bộ với UserService
 
     @Column(name = "ten", length = 100)
     private String firstName;
