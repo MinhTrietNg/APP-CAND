@@ -39,3 +39,12 @@ frontend/android/app/release
 FE/
 
 .m2
+# Ignore docs-private folder
+docs-private/
+*.docx
+*.png
+*.md 
+
+# Backend target
+backend/target/
+backend/*.jar
