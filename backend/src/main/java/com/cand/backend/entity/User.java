@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +32,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@DynamicInsert
 public class User {
 
     @Id
@@ -38,7 +40,7 @@ public class User {
     @Column(columnDefinition = "UUID")
     private UUID id;
 
-    @Column(name = "ten_dang_nhap", unique = true, length = 100, nullable = false)
+    @Column(name = "ten_dang_nhap", length = 100, nullable = false)
     private String username;
 
     @Column(name = "mat_khau_hash", nullable = false)
@@ -102,14 +104,14 @@ public class User {
     @Column(name = "xoa_luc")
     private LocalDateTime deletedAt;
 
-    @Column(name = "otp")
-    private String otp;
+    // @Column(name = "otp")
+    // private String otp;
 
-    @Column(name = "otp_expiry_time")
-    private LocalDateTime otpExpiryTime;
+    // @Column(name = "otp_expiry_time")
+    // private LocalDateTime otpExpiryTime;
 
-    @Column(name = "two_factor_enabled")
-    private boolean twoFactorEnabled = false;
+    // @Column(name = "two_factor_enabled")
+    // private boolean twoFactorEnabled = false;
 
     // Helper method for compatibility with old Auth code
     public void setName(String name) {

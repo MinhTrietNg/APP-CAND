@@ -43,17 +43,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Optional<String> verifyOtp(String email, String otp) {
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null || user.getOtp() == null || user.getOtpExpiryTime() == null) {
-            return Optional.empty();
-        }
-        if (!user.getOtp().equals(otp) || !user.getOtpExpiryTime().isAfter(LocalDateTime.now())) {
-            return Optional.empty();
-        }
+        // User user = userRepository.findByEmail(email).orElse(null);
+        // if (user == null || user.getOtp() == null || user.getOtpExpiryTime() == null)
+        // {
+        // return Optional.empty();
+        // }
+        // if (!user.getOtp().equals(otp) ||
+        // !user.getOtpExpiryTime().isAfter(LocalDateTime.now())) {
+        // return Optional.empty();
+        // }
 
-        user.setOtp(null);
-        user.setOtpExpiryTime(null);
-        userRepository.save(user);
+        // user.setOtp(null);
+        // user.setOtpExpiryTime(null);
+        // userRepository.save(user);
         return Optional.of(jwtTokenProvider.generateToken(email));
     }
 
@@ -64,7 +66,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = new User();
-        user.setName(request.getName());
+        user.setUsername(request.getName());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole() != null ? request.getRole() : Role.ROLE_DOAN_VIEN);
