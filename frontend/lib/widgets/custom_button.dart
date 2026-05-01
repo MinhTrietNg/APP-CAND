@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme.dart';
 
 /// Kiểu hiển thị của [CustomButton].
 enum ButtonVariant { filled, outlined, text }
 
-/// Nút bấm dùng chung – khớp với thiết kế Figma.
+/// Nút bấm dùng chung – khớp với thiết kế Figma (Phase 1 – UI Foundation).
 ///
-/// Mặc định: bo góc viên thuốc (25px), nền xanh primary, chữ trắng.
+/// Mặc định: bo góc 8 px, nền primary blue (#1A56E8), chữ trắng,
+/// shadow nhẹ, pressed-state chuyển sang [AppColors.primaryDark].
 ///
 /// ```dart
-/// // Nút "Đăng nhập" (Figma login)
+/// // Nút chính (filled)
 /// CustomButton(label: 'Đăng nhập', onPressed: () {})
 ///
-/// // Nút "Lịch sử đơn vị" (Figma hồ sơ – nền đỏ)
+/// // Nút viền
 /// CustomButton(
-///   label: 'Lịch sử đơn vị',
-///   backgroundColor: AppColors.red,
+///   label: 'Huỷ',
+///   variant: ButtonVariant.outlined,
 ///   onPressed: () {},
 /// )
 ///
-/// // Nút "Mã QR của tôi" (Figma – viền vàng)
+/// // Nền đỏ (xoá / cảnh báo)
 /// CustomButton(
-///   label: 'Mã QR của tôi',
-///   variant: ButtonVariant.outlined,
-///   foregroundColor: AppColors.primary,
-///   borderColor: AppColors.yellow,
+///   label: 'Xoá',
+///   backgroundColor: AppColors.error,
 ///   onPressed: () {},
 /// )
 /// ```
@@ -38,7 +38,7 @@ class CustomButton extends StatelessWidget {
     this.icon,
     this.width,
     this.height = 48,
-    this.borderRadius = 25,
+    this.borderRadius = 8,
     this.backgroundColor,
     this.foregroundColor,
     this.borderColor,
@@ -67,16 +67,16 @@ class CustomButton extends StatelessWidget {
   /// Chiều cao (mặc định 48 – khớp Figma).
   final double height;
 
-  /// Bo góc (mặc định 25 – dạng viên thuốc khớp Figma).
+  /// Bo góc (mặc định 8 px – khớp Figma).
   final double borderRadius;
 
-  /// Ghi đè màu nền (filled) hoặc màu chữ (outlined/text).
+  /// Ghi đè màu nền (filled) hoặc màu viền (outlined).
   final Color? backgroundColor;
 
   /// Ghi đè màu chữ / icon.
   final Color? foregroundColor;
 
-  /// Ghi đè màu viền (chỉ dùng cho outlined). Mặc định theo foreground.
+  /// Ghi đè màu viền (chỉ dùng cho outlined). Mặc định = foreground.
   final Color? borderColor;
 
   /// Ghi đè cỡ chữ.
@@ -85,7 +85,7 @@ class CustomButton extends StatelessWidget {
   /// `true` = chiếm hết chiều ngang (double.infinity).
   final bool expand;
 
-  // ── Helpers ──────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────
 
   bool get _disabled => onPressed == null || isLoading;
 
@@ -95,11 +95,20 @@ class CustomButton extends StatelessWidget {
   OutlinedBorder get _shape =>
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius));
 
+  /// Shadow for the filled button variant.
+  List<BoxShadow> get _filledShadow => [
+    BoxShadow(
+      color: _bg.withAlpha(70),
+      blurRadius: 12,
+      offset: const Offset(0, 4),
+    ),
+  ];
+
   Widget _buildChild() {
     if (isLoading) {
       return SizedBox(
-        width: 22,
-        height: 22,
+        width: 20,
+        height: 20,
         child: CircularProgressIndicator(
           strokeWidth: 2.5,
           valueColor: AlwaysStoppedAnimation<Color>(
@@ -111,19 +120,26 @@ class CustomButton extends StatelessWidget {
 
     final textWidget = Text(
       label,
-      style: TextStyle(fontSize: fontSize ?? 16, fontWeight: FontWeight.w600),
+      style: GoogleFonts.inter(
+        fontSize: fontSize ?? 15,
+        fontWeight: FontWeight.w600,
+      ),
     );
 
     if (icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        children: [Icon(icon, size: 20), const SizedBox(width: 8), textWidget],
+        children: [
+          Icon(icon, size: 18),
+          const SizedBox(width: 8),
+          textWidget,
+        ],
       );
     }
     return textWidget;
   }
 
-  // ── Build ───────────────────────────────────
+  // ── Build ────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -134,18 +150,13 @@ class CustomButton extends StatelessWidget {
 
     switch (variant) {
       case ButtonVariant.filled:
-        button = ElevatedButton(
+        button = _FilledButtonWithShadow(
           onPressed: _disabled ? null : onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _bg,
-            foregroundColor: _fg,
-            disabledBackgroundColor: _bg.withAlpha(100),
-            disabledForegroundColor: _fg.withAlpha(150),
-            elevation: 0,
-            shape: _shape,
-            minimumSize: Size(0, height),
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-          ),
+          bg: _bg,
+          fg: _fg,
+          shape: _shape,
+          height: height,
+          shadow: _disabled ? const [] : _filledShadow,
           child: child,
         );
         break;
@@ -155,14 +166,16 @@ class CustomButton extends StatelessWidget {
           onPressed: _disabled ? null : onPressed,
           style: OutlinedButton.styleFrom(
             foregroundColor: foregroundColor ?? _bg,
+            disabledForegroundColor: AppColors.textHint,
             side: BorderSide(
               color: _disabled
-                  ? AppColors.greyLight
+                  ? AppColors.border
                   : (borderColor ?? foregroundColor ?? _bg),
+              width: 1.5,
             ),
             shape: _shape,
             minimumSize: Size(0, height),
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
           ),
           child: child,
         );
@@ -173,9 +186,10 @@ class CustomButton extends StatelessWidget {
           onPressed: _disabled ? null : onPressed,
           style: TextButton.styleFrom(
             foregroundColor: foregroundColor ?? _bg,
+            disabledForegroundColor: AppColors.textHint,
             shape: _shape,
             minimumSize: Size(0, height),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
           ),
           child: child,
         );
@@ -186,5 +200,78 @@ class CustomButton extends StatelessWidget {
       return SizedBox(width: effectiveWidth, child: button);
     }
     return button;
+  }
+}
+
+// ── Internal: Filled button with drop-shadow ──────────────────
+
+class _FilledButtonWithShadow extends StatefulWidget {
+  const _FilledButtonWithShadow({
+    required this.onPressed,
+    required this.bg,
+    required this.fg,
+    required this.shape,
+    required this.height,
+    required this.shadow,
+    required this.child,
+  });
+
+  final VoidCallback? onPressed;
+  final Color bg;
+  final Color fg;
+  final OutlinedBorder shape;
+  final double height;
+  final List<BoxShadow> shadow;
+  final Widget child;
+
+  @override
+  State<_FilledButtonWithShadow> createState() =>
+      _FilledButtonWithShadowState();
+}
+
+class _FilledButtonWithShadowState extends State<_FilledButtonWithShadow>
+    with SingleTickerProviderStateMixin {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool disabled = widget.onPressed == null;
+    final Color effectiveBg = _pressed
+        ? AppColors.primaryDark
+        : (disabled ? widget.bg.withAlpha(80) : widget.bg);
+    final Color effectiveFg = disabled
+        ? AppColors.white.withAlpha(140)
+        : widget.fg;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 120),
+      decoration: BoxDecoration(
+        boxShadow: _pressed ? const [] : widget.shadow,
+        borderRadius: (widget.shape as RoundedRectangleBorder).borderRadius
+            .resolve(TextDirection.ltr),
+      ),
+      child: ElevatedButton(
+        onPressed: disabled ? null : widget.onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: effectiveBg,
+          foregroundColor: effectiveFg,
+          disabledBackgroundColor: widget.bg.withAlpha(80),
+          disabledForegroundColor: AppColors.white.withAlpha(140),
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: widget.shape,
+          minimumSize: Size(0, widget.height),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+        ),
+        onLongPress: disabled ? null : () {},
+        child: GestureDetector(
+          onTapDown: disabled ? null : (_) => setState(() => _pressed = true),
+          onTapUp: disabled ? null : (_) => setState(() => _pressed = false),
+          onTapCancel: disabled ? null : () => setState(() => _pressed = false),
+          behavior: HitTestBehavior.translucent,
+          child: widget.child,
+        ),
+      ),
+    );
   }
 }
