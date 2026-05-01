@@ -121,7 +121,8 @@ public class TransferRequestServiceImpl implements TransferRequestService {
 
         @Override
         public List<TransferResponseDto> getAllRequests() {
-                return transferRepository.findAll().stream()
+                return transferRepository.findAll()
+                                .stream()
                                 .map(this::mapToResponseDto)
                                 .collect(Collectors.toList());
         }

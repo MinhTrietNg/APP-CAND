@@ -56,6 +56,15 @@ public class TransferRequestController {
     // Lấy danh sách yêu cầu
     @GetMapping("/all")
     public ResponseEntity<List<TransferResponseDto>> getAllRequests() {
-        return ResponseEntity.ok(transferService.getAllRequests());
+        System.out.println("Fetching all transfer requests...");
+        try {
+            List<TransferResponseDto> requests = transferService.getAllRequests();
+            System.out.println("Total requests fetched: " + requests.size());
+            return ResponseEntity.ok(requests);
+        } catch (Exception e) {
+            System.err.println("Error fetching transfer requests: " + e.getMessage());
+            return ResponseEntity.status(500).build();
+        }
+        // return ResponseEntity.ok(transferService.getAllRequests());
     }
 }

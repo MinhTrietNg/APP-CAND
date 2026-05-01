@@ -7,4 +7,6 @@ import com.cand.backend.entity.User;
 public interface UserService {
 
     List<User> getAllUsers();
+
+    User getUserByEmail(String email);
 }
