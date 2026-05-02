@@ -20,6 +20,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // Kiểm tra xem email đã tồn tại hay chưa (dùng cho lúc đăng ký)
     boolean existsByEmail(String email);
 
+    List<User> findByUnitId(Long unitId);
+
     // Tìm tất cả users trong cùng một đơn vị
     @Query("SELECT u.id FROM User u WHERE u.unit.id = :unitId")
     List<UUID> findUserIdsByUnitId(@Param("unitId") Long unitId);

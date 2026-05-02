@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
         user.setOtp(null);
         user.setOtpExpiryTime(null);
         userRepository.save(user);
-        return Optional.of(jwtTokenProvider.generateToken(user.getEmail()));
+        return Optional.of(jwtTokenProvider.generateToken(user));
     }
 
     @Override
