@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme.dart';
 
-/// Ô nhập liệu dùng chung – khớp với thiết kế Figma.
+/// Ô nhập liệu dùng chung – khớp với thiết kế Figma (Phase 1 – UI Foundation).
 ///
-/// Bo góc 10px (Figma), hỗ trợ: label, clear button (✕),
-/// toggle mật khẩu (👁), dropdown (readOnly + suffixIcon chevron).
+/// Đặc điểm:
+/// • Bo góc 8 px (Figma), fill nền [AppColors.surfaceTertiary].
+/// • Viền mặc định [AppColors.border], focused 2 px [AppColors.primary].
+/// • Hỗ trợ: label phía trên (Inter 13 medium), clear button (✕),
+///   toggle mật khẩu (👁), dropdown (readOnly + suffixIcon chevron).
 ///
 /// ```dart
-/// // Username (Figma login – có nút ✕)
+/// // Ô tên đăng nhập (có nút ✕)
 /// CustomTextField(
 ///   label: 'Tên đăng nhập',
 ///   controller: _usernameCtrl,
 ///   showClearButton: true,
 /// )
 ///
-/// // Password (Figma login – có icon 👁)
+/// // Ô mật khẩu (có icon 👁)
 /// CustomTextField(
 ///   label: 'Mật khẩu',
 ///   controller: _passwordCtrl,
@@ -23,7 +27,7 @@ import '../theme.dart';
 ///   showTogglePassword: true,
 /// )
 ///
-/// // Dropdown-like (Figma hồ sơ – readOnly + chevron)
+/// // Dropdown-like (readOnly + chevron)
 /// CustomTextField(
 ///   label: 'Đơn vị hiện tại',
 ///   controller: _unitCtrl,
@@ -58,12 +62,12 @@ class CustomTextField extends StatefulWidget {
     this.readOnly = false,
     this.autofocus = false,
     this.focusNode,
-    this.borderRadius = 10,
+    this.borderRadius = 8,
   });
 
   final TextEditingController? controller;
 
-  /// Nhãn phía trên ô nhập (Figma: "Tên đăng nhập", "Mật khẩu", …).
+  /// Nhãn phía trên ô nhập (Inter Medium 13 – màu [AppColors.textSecondary]).
   final String? label;
 
   /// Placeholder bên trong ô.
@@ -85,10 +89,10 @@ class CustomTextField extends StatefulWidget {
   /// Ẩn ký tự (mật khẩu).
   final bool obscureText;
 
-  /// Hiện nút bật/tắt hiện mật khẩu (Figma: icon 👁 ở ô Mật khẩu).
+  /// Hiện nút bật/tắt hiện mật khẩu (icon 👁).
   final bool showTogglePassword;
 
-  /// Hiện nút xoá nội dung ✕ (Figma: icon ✕ ở ô Tên đăng nhập).
+  /// Hiện nút xoá nội dung ✕.
   final bool showClearButton;
 
   final TextInputType? keyboardType;
@@ -105,13 +109,13 @@ class CustomTextField extends StatefulWidget {
   final int? maxLength;
   final bool enabled;
 
-  /// Chế độ chỉ đọc (dùng cho dropdown-like trong Figma hồ sơ).
+  /// Chế độ chỉ đọc.
   final bool readOnly;
 
   final bool autofocus;
   final FocusNode? focusNode;
 
-  /// Bo góc (mặc định 10 – khớp Figma text field).
+  /// Bo góc (mặc định 8 px – khớp Figma).
   final double borderRadius;
 
   @override
@@ -127,47 +131,49 @@ class _CustomTextFieldState extends State<CustomTextField> {
     _obscured = widget.obscureText;
   }
 
-  // ── Suffix logic ────────────────────────────
+  // ── Suffix logic ─────────────────────────────────────────
 
   Widget? _buildSuffix() {
-    // Ưu tiên 1: Toggle mật khẩu
+    // Priority 1: Toggle password
     if (widget.showTogglePassword) {
       return IconButton(
         icon: Icon(
           _obscured ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-          color: AppColors.greyMedium,
-          size: 22,
+          color: AppColors.textHint,
+          size: 20,
         ),
         onPressed: () => setState(() => _obscured = !_obscured),
+        splashRadius: 18,
       );
     }
 
-    // Ưu tiên 2: Clear button (✕)
+    // Priority 2: Clear button (✕)
     if (widget.showClearButton && widget.controller != null) {
       return ValueListenableBuilder<TextEditingValue>(
         valueListenable: widget.controller!,
         builder: (_, value, child) {
           if (value.text.isEmpty) return const SizedBox.shrink();
           return IconButton(
-            icon: const Icon(
-              Icons.close,
-              color: AppColors.greyMedium,
-              size: 20,
+            icon: Icon(
+              Icons.cancel_rounded,
+              color: AppColors.textHint,
+              size: 18,
             ),
             onPressed: () {
               widget.controller!.clear();
               widget.onChanged?.call('');
             },
+            splashRadius: 18,
           );
         },
       );
     }
 
-    // Ưu tiên 3: Widget tuỳ chỉnh
+    // Priority 3: Custom widget
     return widget.suffixIcon;
   }
 
-  // ── Build ───────────────────────────────────
+  // ── Build ────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -181,15 +187,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.greyMedium,
-              fontWeight: FontWeight.w400,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
+              height: 1.38,
             ),
           ),
           const SizedBox(height: 6),
         ],
 
-        // ── TextField ──
+        // ── TextFormField ──
         TextFormField(
           controller: widget.controller,
           focusNode: widget.focusNode,
@@ -206,39 +214,75 @@ class _CustomTextFieldState extends State<CustomTextField> {
           maxLength: widget.maxLength,
           enabled: widget.enabled,
           autofocus: widget.autofocus,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.black),
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: widget.enabled
+                ? AppColors.textPrimary
+                : AppColors.textSecondary,
+            height: 1.5,
+          ),
           decoration: InputDecoration(
             hintText: widget.hintText,
+            hintStyle: GoogleFonts.inter(
+              color: AppColors.textHint,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
             helperText: widget.errorText == null ? widget.helperText : null,
+            helperStyle: GoogleFonts.inter(
+              color: AppColors.textHint,
+              fontSize: 12,
+            ),
             errorText: widget.errorText,
+            errorStyle: GoogleFonts.inter(
+              color: AppColors.error,
+              fontSize: 12,
+            ),
+            filled: true,
+            fillColor: widget.enabled
+                ? AppColors.surfaceTertiary
+                : AppColors.surfaceVariant,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             prefixIcon: widget.prefixIcon != null
-                ? Icon(widget.prefixIcon, color: AppColors.greyMedium, size: 22)
+                ? Icon(
+                    widget.prefixIcon,
+                    color: AppColors.textHint,
+                    size: 20,
+                  )
                 : null,
             suffixIcon: _buildSuffix(),
+
+            // ── Borders ──
             border: OutlineInputBorder(
               borderRadius: br,
-              borderSide: const BorderSide(color: AppColors.greyLight),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: br,
-              borderSide: const BorderSide(color: AppColors.greyLight),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: br,
               borderSide: const BorderSide(
                 color: AppColors.primary,
-                width: 1.5,
+                width: 2,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: br,
-              borderSide: const BorderSide(color: AppColors.red),
+              borderSide: const BorderSide(color: AppColors.error),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: br,
-              borderSide: const BorderSide(color: AppColors.red, width: 1.5),
+              borderSide: const BorderSide(color: AppColors.error, width: 2),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: br,
+              borderSide: const BorderSide(color: AppColors.divider),
             ),
           ),
         ),
