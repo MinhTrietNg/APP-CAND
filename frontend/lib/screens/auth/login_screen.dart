@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../theme.dart';
@@ -79,6 +80,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             });
                           },
                           onLogin: widget.onLogin,
+                          onFingerprintLogin: () {
+                            showDialog<void>(
+                              context: context,
+                              barrierColor: Colors.black.withValues(alpha: 0.5),
+                              builder: (_) => const _FingerprintDialog(),
+                            );
+                          },
+                          onQrLogin: () => context.go('/login/qr'),
                         ),
                       ),
                     ],
@@ -142,6 +151,8 @@ class _LoginCard extends StatelessWidget {
     required this.onClearOfficerId,
     required this.onTogglePassword,
     required this.onLogin,
+    required this.onFingerprintLogin,
+    required this.onQrLogin,
   });
 
   final TextEditingController officerIdController;
@@ -150,6 +161,8 @@ class _LoginCard extends StatelessWidget {
   final VoidCallback onClearOfficerId;
   final VoidCallback onTogglePassword;
   final VoidCallback onLogin;
+  final VoidCallback onFingerprintLogin;
+  final VoidCallback onQrLogin;
 
   @override
   Widget build(BuildContext context) {
@@ -272,12 +285,14 @@ class _LoginCard extends StatelessWidget {
             icon: Icons.fingerprint,
             label: 'Đăng nhập bằng vân tay',
             iconSize: 34,
+            onTap: onFingerprintLogin,
           ),
           const SizedBox(height: 10),
           _AlternateLoginAction(
             icon: Icons.qr_code_2,
             label: 'Đăng nhập bằng mã QR',
             iconSize: 31,
+            onTap: onQrLogin,
           ),
         ],
       ),
@@ -354,16 +369,18 @@ class _AlternateLoginAction extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.iconSize,
+    required this.onTap,
   });
 
   final IconData icon;
   final String label;
   final double iconSize;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       borderRadius: BorderRadius.circular(5),
       child: SizedBox(
         height: 34,
@@ -382,6 +399,66 @@ class _AlternateLoginAction extends StatelessWidget {
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 height: 1.25,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FingerprintDialog extends StatelessWidget {
+  const _FingerprintDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 58.5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 4,
+      shadowColor: const Color(0x40000000),
+      backgroundColor: AppColors.white,
+      child: SizedBox(
+        width: 273,
+        height: 328,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 8,
+              right: 7,
+              child: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close, size: 24),
+                color: const Color(0xFF64748B),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints.tightFor(
+                  width: 40,
+                  height: 40,
+                ),
+                splashRadius: 18,
+              ),
+            ),
+            Positioned(
+              top: 63,
+              left: 0,
+              right: 0,
+              child: Text(
+                'Chạm vào vân tay để xác thực',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF0F172A),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  height: 1.25,
+                ),
+              ),
+            ),
+            const Center(
+              child: Icon(
+                Icons.fingerprint,
+                color: Color(0xFF1E40AF),
+                size: 110,
               ),
             ),
           ],
